@@ -9,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
+@CrossOrigin(maxAge = 3600)
 @RequestMapping("/api/")
 public class UsuariosControladores {
 
@@ -23,6 +21,7 @@ public class UsuariosControladores {
     RestTemplate restTemplate;
 
     @PostMapping(value = "/auth")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<String> login(@RequestParam("usuario") String username, @RequestParam("contraisenia") String contraisenia) throws JsonProcessingException {
         Usuario usuario = new Usuario();
 
@@ -33,8 +32,13 @@ public class UsuariosControladores {
         final String jsonNode = mapper.writeValueAsString(usuario);
         System.out.println(jsonNode);
 
+        // {
+        //	"usuario": "admin",
+        //	"contraisenia": "admin"
+        //}
+
         HttpEntity<String> entity = new HttpEntity<String>(jsonNode);
-        ResponseEntity<String> r = restTemplate.postForEntity("http://TIENDAFIREBORN/api/auth/", entity, String.class);
+        ResponseEntity<String> r = restTemplate.postForEntity("http://TIENDAFIREBORN/api/auth?usuario="+username+"&"+"contraisenia="+contraisenia, entity, String.class);
 
         return r;
     }
